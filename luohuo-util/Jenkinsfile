@@ -6,8 +6,15 @@ pipeline {
         stage('maven 本地编译luohuo-util模块') {
             steps {
                 echo "maven 本地编译luohuo-util模块"
-                sh "pwd"
-                sh 'mvn clean ${MAVEN_COMMAND} -T8 -Dmaven.compile.fork=true -Dmaven.test.skip=true'
+                
+                // 切换到子目录，解决找不到 pom.xml 的问题
+                dir('luohuo-util') {
+                    sh "pwd"
+                    sh "ls -R"
+                    // 移除 -T8，改为单线程构建；去除maven.compile.fork，避免启动额外进程消耗内存
+                    // 配置好的机器请自行配置
+                    sh 'mvn clean ${MAVEN_COMMAND} -Dmaven.test.skip=true'
+                }
             }
         }
     }
